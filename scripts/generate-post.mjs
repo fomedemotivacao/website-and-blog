@@ -374,27 +374,59 @@ Variáveis para este artigo:
 ATENÇÃO: O artigo deve ter NO MÍNIMO 1.200 PALAVRAS. Preferencialmente entre 1.300 e 1.700 palavras.
 Responda APENAS com o artigo. Primeira linha: # Título do Artigo. Segunda linha: RESUMO: [resumo até 200 caracteres].`;
 
-// ─── Chama OpenRouter com fallback automático ─────────────────────────────────
-
-console.log('⏳ Chamando OpenRouter...');
-
 const messages = [
   { role: 'system', content: systemPrompt },
   { role: 'user', content: userPrompt },
 ];
 
-const [aiResponse, unsplashResult] = await Promise.all([
-  callOpenRouterWithFallback(messages, modelo),
-  unsplashPromise,
-]);
+// ─── Loop de geração: até 15 tentativas para obter texto com ≥ 1.200 palavras ──
 
-const rawArticle = aiResponse.choices?.[0]?.message?.content;
-if (!rawArticle || rawArticle.trim().length < 500) {
-  console.error('Resposta vazia ou muito curta da IA:', rawArticle);
+const MAX_TENTATIVAS = 15;
+const MIN_PALAVRAS = 1200;
+
+let rawArticle = null;
+let tentativa = 0;
+
+while (tentativa < MAX_TENTATIVAS) {
+  tentativa++;
+  console.log(`\n⏳ Tentativa ${tentativa}/${MAX_TENTATIVAS} — chamando OpenRouter...`);
+
+  const aiResponse = await callOpenRouterWithFallback(messages, modelo);
+  const candidato = aiResponse.choices?.[0]?.message?.content;
+
+  if (!candidato || candidato.trim().length < 200) {
+    console.warn(`⚠️  Tentativa ${tentativa}: resposta vazia ou muito curta (${candidato?.length ?? 0} chars). Tentando novamente...`);
+    continue;
+  }
+
+  // Conta palavras do candidato
+  const linhasCandidato = candidato.split('\n');
+  const conteudoCandidato = linhasCandidato
+    .filter(l => !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== '')
+    .join(' ');
+  const palavrasCandidato = conteudoCandidato.split(/\s+/).length;
+
+  console.log(`📏 Tentativa ${tentativa}: ${palavrasCandidato} palavras geradas.`);
+
+  if (palavrasCandidato >= MIN_PALAVRAS) {
+    console.log(`✅ Mínimo de ${MIN_PALAVRAS} palavras atingido na tentativa ${tentativa}!`);
+    rawArticle = candidato;
+    break;
+  }
+
+  console.warn(`⚠️  Tentativa ${tentativa}: apenas ${palavrasCandidato} palavras — mínimo é ${MIN_PALAVRAS}. Tentando novamente...`);
+}
+
+if (!rawArticle) {
+  console.error(`❌ Não foi possível gerar um artigo com ${MIN_PALAVRAS}+ palavras após ${MAX_TENTATIVAS} tentativas. Abortando.`);
   process.exit(1);
 }
 
-console.log('✅ Artigo gerado! Tamanho:', rawArticle.length, 'chars');
+console.log(`\n✅ Artigo aprovado! Tamanho: ${rawArticle.length} chars`);
+
+// ─── Aguarda imagem do Unsplash ───────────────────────────────────────────────
+
+const unsplashResult = await unsplashPromise;
 
 // ─── Extrai título, resumo e parágrafos ──────────────────────────────────────
 
@@ -425,13 +457,7 @@ if (buffer.trim()) paragraphs.push(buffer.trim());
 const wordCount = contentLines.join(' ').split(/\s+/).length;
 const readingTime = `${Math.max(5, Math.round(wordCount / 200))} min`;
 
-// ─── Verifica contagem mínima de palavras ─────────────────────────────────────
-
-if (wordCount < 1200) {
-  console.warn(`⚠️  Artigo com ${wordCount} palavras — abaixo do mínimo de 1.200. Continuando mesmo assim.`);
-} else {
-  console.log(`✅ Contagem de palavras OK: ${wordCount} palavras.`);
-}
+console.log(`✅ Contagem de palavras final: ${wordCount} palavras.`);
 
 // ─── Imagem final: Unsplash ou fallback /og/{slug} ───────────────────────────
 
