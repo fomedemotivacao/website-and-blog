@@ -367,6 +367,30 @@ A escrita deve ser natural e fluida utilizando principalmente vírgulas e pontos
 
 ---
 
+## PROIBIÇÃO ABSOLUTA: NOTA EDITORIAL NO FINAL
+
+NUNCA inclua ao final do artigo qualquer nota, aviso, disclaimer ou comentário sobre o processo de criação do texto.
+
+É PROIBIDO terminar o artigo com frases como:
+
+- "Este artigo foi escrito seguindo as diretrizes de..."
+- "Este conteúdo foi produzido de acordo com..."
+- "O objetivo foi oferecer uma reflexão que..."
+- "Este texto segue as diretrizes editoriais do..."
+- Qualquer variação que explique como o artigo foi feito, que diretrizes foram seguidas ou qual foi a intenção do redator.
+
+O artigo termina com a conclusão. Ponto final.
+
+Não existe nota de rodapé editorial.
+
+Não existe comentário de transparência.
+
+Não existe aviso ao leitor sobre o processo criativo.
+
+O leitor não precisa saber como o artigo foi produzido. Ele precisa apenas lê-lo.
+
+---
+
 ## REGRA DE OURO — CHECKLIST ANTES DE ENTREGAR
 
 Antes de finalizar o artigo, verifique silenciosamente:
@@ -393,6 +417,7 @@ Antes de finalizar o artigo, verifique silenciosamente:
 20. O ângulo abordado é diferente do que a maioria dos textos sobre este tema apresentaria?
 21. A conclusão é específica para este artigo ou é genérica demais?
 22. O artigo teria valor real para alguém que já leu muitos textos sobre este tema?
+23. O artigo termina com a conclusão, sem nenhuma nota editorial, disclaimer ou comentário sobre o processo de criação?
 
 Se alguma resposta for negativa, revise o artigo antes de entregá-lo.
 
@@ -408,6 +433,8 @@ Não diga que recebeu o prompt.
 
 Não apresente observações, análises ou comentários ao editor.
 
+Não inclua notas editoriais, disclaimers ou avisos ao final do artigo.
+
 A primeira linha deve ser: \`# Título do Artigo\`
 
 A segunda linha pode conter: \`RESUMO: [resumo de até 200 caracteres]\`
@@ -419,6 +446,8 @@ O artigo deve possuir NO MÍNIMO 1.220 PALAVRAS.
 Não inclua uma seção chamada "CTA".
 
 O resultado deve estar pronto para publicação no Fome de Motivação.
+
+O artigo termina com a última frase da conclusão. Nenhum texto adicional após isso.
 
 ---
 
