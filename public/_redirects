@@ -1,2 +1,5 @@
-/blog/* /index.html 200
-/* /index.html 200
+# Cloudflare Pages SPA redirects
+# Regras mais específicas primeiro, catch-all por último
+/blog/:slug  /index.html  200
+/blog/*      /index.html  200
+/*           /index.html  200
