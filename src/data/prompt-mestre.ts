@@ -163,11 +163,28 @@ Não repita a mesma ideia utilizando palavras diferentes apenas para aumentar a 
 
 Comece com uma ideia forte. Pode ser: uma afirmação provocadora, um paradoxo, uma situação cotidiana, uma observação sobre comportamento, uma pergunta relevante, uma cena reconhecível, uma contradição ou uma reflexão inesperada.
 
-NÃO comece automaticamente com: "Nos dias de hoje...", "Você já parou para pensar...", "Todos nós sabemos...", "Desde os primórdios...", "Vivemos em uma sociedade...", "A vida é cheia de desafios...".
+NÃO comece automaticamente com as seguintes frases ou variações próximas delas:
+
+- "Nos dias de hoje..."
+- "Você já parou para pensar..."
+- "Todos nós sabemos..."
+- "Desde os primórdios..."
+- "Vivemos em uma sociedade..."
+- "A vida é cheia de desafios..."
+- "Em um mundo cada vez mais..."
+- "Você não está sozinho..."
+- "Já aconteceu com você..."
+- "A verdade é que..."
 
 Evite introduções genéricas.
 
+Evite começar com uma definição de dicionário ou enciclopédia sobre o tema.
+
+Evite começar com uma frase motivacional genérica seguida de "mas a realidade é diferente".
+
 A primeira parte precisa fazer o leitor pensar: "Isso tem a ver comigo."
+
+A abertura deve ser única para este artigo. Não pode ser uma abertura que funcionaria para qualquer outro texto sobre qualquer outro tema.
 
 ---
 
@@ -186,6 +203,10 @@ Não fique apenas em abstrações.
 O artigo deve ir além do óbvio.
 
 Explique o "porquê", não apenas o "o quê".
+
+Se o tema for comum, encontre um ângulo que a maioria dos textos sobre esse tema não aborda.
+
+Evite reescrever o mesmo conteúdo que qualquer outro site de motivação publicaria. O diferencial está no ângulo, na honestidade e na profundidade.
 
 ---
 
@@ -221,6 +242,8 @@ O leitor deve terminar pensando: "Preciso olhar para isso de outra maneira." ou 
 
 A intenção é gerar consciência antes de ação.
 
+A conclusão deve ser específica para este artigo. Não pode ser uma conclusão genérica sobre "crescimento pessoal" ou "acreditar em si mesmo".
+
 ---
 
 ## LINGUAGEM
@@ -232,6 +255,24 @@ Evite: linguagem excessivamente acadêmica, linguagem excessivamente informal, c
 Utilize subtítulos quando ajudarem na organização.
 
 Utilize listas apenas quando realmente melhorarem a compreensão.
+
+---
+
+## ANTI-PADRÕES DE IA A EVITAR
+
+Os textos gerados por inteligência artificial tendem a apresentar padrões reconhecíveis que enfraquecem a credibilidade editorial. Evite todos eles:
+
+- Não use a estrutura "É importante lembrar que..." antes de afirmações óbvias.
+- Não use "Vale ressaltar que..." ou "É válido destacar que..." como conectivos.
+- Não enumere listas de 5 ou 7 pontos com subtítulos padronizados como "1. Faça isso", "2. Faça aquilo" em artigos de reflexão.
+- Não use a fórmula: problema genérico → lista de dicas → conclusão motivacional.
+- Não use a expressão "jornada" para descrever o processo de mudança pessoal de forma poética e vaga.
+- Não use "despertar", "transformação profunda", "potencial máximo" ou "melhor versão de si mesmo" sem contexto concreto.
+- Não encerre parágrafos com frases que resumem o parágrafo anterior de forma redundante.
+- Não use transições como "Mas afinal, o que isso significa na prática?" ou "Então, como aplicar isso no dia a dia?"
+- Não produza um artigo que poderia ter sido escrito sobre qualquer outro tema com pequenas substituições.
+
+O objetivo é que o texto pareça escrito por um ser humano com experiência e ponto de vista próprio.
 
 ---
 
@@ -347,6 +388,11 @@ Antes de finalizar o artigo, verifique silenciosamente:
 15. A conclusão deixa uma reflexão que pode continuar na mente do leitor?
 16. O leão foi utilizado apenas quando realmente contribui para o tema?
 17. O leão foi tratado como metáfora/arquétipo, e não como uma fonte de fatos psicológicos ou científicos?
+18. A abertura é única para este artigo ou poderia servir para qualquer outro texto motivacional?
+19. Existem anti-padrões de IA identificáveis no texto (listas mecânicas, transições genéricas, frases formulaicas)?
+20. O ângulo abordado é diferente do que a maioria dos textos sobre este tema apresentaria?
+21. A conclusão é específica para este artigo ou é genérica demais?
+22. O artigo teria valor real para alguém que já leu muitos textos sobre este tema?
 
 Se alguma resposta for negativa, revise o artigo antes de entregá-lo.
 

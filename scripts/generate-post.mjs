@@ -96,11 +96,7 @@ function callOpenRouter(body) {
 }
 
 // ─── Chama OpenRouter com fallback automático ─────────────────────────────────
-// Se o modelo principal retornar 429 (rate limit) ou 404 (não encontrado),
-// tenta os modelos de fallback automaticamente
-
 async function callOpenRouterWithFallback(messages, primaryModel) {
-  // Monta lista: modelo principal + fallbacks (sem duplicar)
   const models = [primaryModel, ...FALLBACK_MODELS.filter(m => m !== primaryModel)];
 
   for (let i = 0; i < models.length; i++) {
@@ -131,12 +127,10 @@ async function callOpenRouterWithFallback(messages, primaryModel) {
         continue;
       }
 
-      // Outros erros ou sem mais fallbacks → falha
       console.error(`❌ Erro OpenRouter com modelo "${model}":`, JSON.stringify(response.error, null, 2));
       process.exit(1);
     }
 
-    // Sucesso
     if (i > 0) {
       console.log(`✅ Artigo gerado com modelo de fallback: ${model}`);
     } else {
@@ -210,12 +204,14 @@ async function buscarImagemUnsplash(query) {
 }
 
 // ─── Atualiza sitemap.xml ─────────────────────────────────────────────────────
+// ATENÇÃO: a rota dos artigos é /blog/{slug} — não /post/{slug}
 
 function atualizarSitemap(slug, date) {
   const BASE_URL = 'https://fomedemotivacao.com.br';
   const sitemapPath = 'public/sitemap.xml';
 
-  const postUrl = `${BASE_URL}/post/${slug}`;
+  // Rota correta: /blog/{slug}
+  const postUrl = `${BASE_URL}/blog/${slug}`;
   const lastmod = date; // YYYY-MM-DD
 
   let sitemapContent = '';
@@ -223,7 +219,6 @@ function atualizarSitemap(slug, date) {
   if (existsSync(sitemapPath)) {
     sitemapContent = readFileSync(sitemapPath, 'utf-8');
   } else {
-    // Cria sitemap mínimo se não existir
     sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
@@ -234,8 +229,8 @@ function atualizarSitemap(slug, date) {
   }
 
   // Verifica se o slug já existe no sitemap (evita duplicata)
-  if (sitemapContent.includes(`/post/${slug}`)) {
-    console.log(`ℹ️  URL já existe no sitemap: /post/${slug}`);
+  if (sitemapContent.includes(`/blog/${slug}`)) {
+    console.log(`ℹ️  URL já existe no sitemap: /blog/${slug}`);
     return false;
   }
 
@@ -399,7 +394,6 @@ while (tentativa < MAX_TENTATIVAS) {
     continue;
   }
 
-  // Conta palavras do candidato
   const linhasCandidato = candidato.split('\n');
   const conteudoCandidato = linhasCandidato
     .filter(l => !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== '')
@@ -562,4 +556,4 @@ console.log(`📖 Palavras: ${wordCount} | Leitura: ${readingTime}`);
 if (imageCredit) {
   console.log(`📸 Crédito da imagem: ${imageCredit.author} via Unsplash`);
 }
-console.log(`🗺️  Sitemap: https://fomedemotivacao.com.br/post/${slug}`);
+console.log(`🗺️  URL do post: https://fomedemotivacao.com.br/blog/${slug}`);
