@@ -299,14 +299,17 @@ const TEMAS_BANCO = [
 ];
 
 // ─── Sanitiza parágrafos gerados pela IA ─────────────────────────────────────
-// Evita que caracteres especiais quebrem a sintaxe do TypeScript
+// CRÍTICO: evita que caracteres especiais quebrem a sintaxe TypeScript do posts.ts
+// Qualquer caractere que quebre strings JS deve ser neutralizado aqui.
 
 function sanitizeParagraph(p) {
   return p
-    .replace(/\u2014|\u2013/g, ',')   // travessão em vírgula (regra do prompt)
-    .replace(/\u2018|\u2019/g, "'")   // aspas tipográficas simples → padrão
-    .replace(/\u201c|\u201d/g, '"')   // aspas tipográficas duplas → padrão
-    .replace(/\\/g, '\\\\')           // backslashes soltos → escapados
+    .replace(/\u2014|\u2013/g, ',')    // travessão em vírgula (regra do prompt)
+    .replace(/\u2018|\u2019/g, "'")    // aspas tipográficas simples → padrão
+    .replace(/\u201c|\u201d/g, '"')    // aspas tipográficas duplas → padrão
+    .replace(/\\/g, '\\\\')            // backslashes soltos → escapados
+    .replace(/`/g, "'")                // backticks → aspas simples (CRÍTICO: evita template literal quebrado)
+    .replace(/\$\{/g, '(')            // ${...} → ( — evita interpolação quebrada no TS
     .trim();
 }
 
@@ -518,7 +521,9 @@ if (existingSlugs.has(slug)) {
 
 // ─── Monta bloco do novo post ─────────────────────────────────────────────────
 
-// FIX: sanitiza parágrafos antes de serializar para evitar corrupção do posts.ts
+// CRÍTICO: sanitiza parágrafos antes de serializar para evitar corrupção do posts.ts
+// JSON.stringify já escapa aspas duplas e newlines — sanitizeParagraph neutraliza
+// os demais caracteres perigosos (backticks, ${, travessões, etc.)
 const escapedParagraphs = paragraphs
   .map(p => `      ${JSON.stringify(sanitizeParagraph(p))}`)
   .join(',\n');
