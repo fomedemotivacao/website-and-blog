@@ -315,6 +315,32 @@ function sanitizeParagraph(p) {
     .trim();
 }
 
+// ─── Padrões de metadado gerados pela IA — NUNCA devem aparecer no artigo ────
+// Modelos como Gemma, Nemotron e outros adicionam notas ao final da resposta,
+// como "(Note: The article length is approximately X words, satisfying the
+// minimum requirement.)" ou variações. Este filtro remove qualquer linha que
+// corresponda a esses padrões antes de processar os parágrafos.
+
+const AI_METADATA_PATTERNS = [
+  /^\s*\(?\s*note\s*:/i,                          // (Note: ...) ou Note: ...
+  /^\s*\(?\s*nota\s*:/i,                          // (Nota: ...) — variante PT
+  /article\s+length\s+is\s+approximately/i,       // "article length is approximately"
+  /satisfying\s+the\s+(minimum|word)\s+req/i,     // "satisfying the minimum requirement"
+  /approximately\s+\d[\d,.]+\s+words/i,            // "approximately 1,380 words"
+  /total\s+word\s+count/i,                         // "total word count"
+  /word\s+count\s*:/i,                             // "word count:"
+  /contagem\s+de\s+palavras/i,                     // PT: "contagem de palavras"
+  /^\s*\*\*?note\s*:/i,                            // **Note: ...
+  /^\s*\[note\]/i,                                  // [Note]
+  /^\s*---\s*$/,                                    // separador horizontal solto
+  /^\s*this\s+article\s+(has|contains|meets)/i,   // "This article has/contains..."
+  /^\s*o\s+artigo\s+(tem|possui|atende)/i,         // PT: "O artigo tem..."
+];
+
+function isAIMetadata(line) {
+  return AI_METADATA_PATTERNS.some(pattern => pattern.test(line));
+}
+
 // ─── Lê posts.ts e conta artigos existentes ──────────────────────────────────
 
 const postsPath = 'src/data/posts.ts';
@@ -413,7 +439,7 @@ while (tentativa < MAX_TENTATIVAS) {
 
   const linhasCandidato = candidato.split('\n');
   const conteudoCandidato = linhasCandidato
-    .filter(l => !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== '')
+    .filter(l => !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== '' && !isAIMetadata(l))
     .join(' ');
   const palavrasCandidato = conteudoCandidato.split(/\s+/).length;
 
@@ -445,9 +471,16 @@ const lines = rawArticle.split('\n');
 const titleLine = lines.find(l => l.startsWith('# '))?.replace(/^#\s+/, '').trim() || `Artigo sobre ${tema}`;
 const resumoLine = lines.find(l => l.startsWith('RESUMO:'))?.replace(/^RESUMO:\s*/, '').trim() || `Reflexões sobre ${tema} para ajudar você a pensar melhor e agir com mais clareza.`;
 
+// FIX: filtra linhas de metadado da IA (ex: "Note: The article length is approximately...")
+// além das linhas de título e resumo já descartadas anteriormente.
 const contentLines = lines.filter(l =>
-  !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== ''
+  !l.startsWith('# ') && !l.startsWith('RESUMO:') && l.trim() !== '' && !isAIMetadata(l)
 ).map(l => l.trim());
+
+if (contentLines.length === 0) {
+  console.error('❌ Nenhuma linha de conteúdo encontrada após filtragem. Abortando.');
+  process.exit(1);
+}
 
 const paragraphs = [];
 let buffer = '';
