@@ -442,6 +442,7 @@ export const posts: Post[] = [
       "Reduzir a competição interna não significa abandonar metas ou ambição. Significa, antes de tudo, garantir que essas metas nasçam de um desejo genuíno, não de uma pressão para corresponder a uma imagem externa. Quando o foco volta para o próprio caminho, a energia que antes era gasta em observar e julgar pode ser redirecionada para ações que realmente importam para quem se está tornando. Essa mudança de foco traz uma sensão de leveza, pois o peso de ter que corresponder a um padrão impossível começa a se dissipar.",
       "Ao final desse processo, não se espera que a comparação desapareça por completo – ela é parte da nossa natureza. O objetivo é que ela deixe de ser o termo principal de avaliação e passe a ser apenas uma fonte ocasional de informação, utilizada quando realmente serve ao crescimento e não ao julgamento.",
       "Se esse tema despertou algum insight e você gostaria de explorar maneiras práticas de transformar reflexões em ações, o ebook *Do Insight à Ação* oferece exercícios e guias que podem ajudar a colocar essas ideias no dia a dia. Sua leitura é opcional e aparece aqui simplesmente como um recurso disponível para quem quiser aprofundar o caminho rumo a menos competição interna e mais foco no próprio percurso.",
+  ],
   },
 
   {
