@@ -16,6 +16,14 @@ name: Publicar Posts Automáticos
 #   Cron UTC:     09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:30
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ─── TRAVA DE CONCORRÊNCIA ────────────────────────────────────────────────────
+# Impede que dois jobs rodem ao mesmo tempo e corrompam o posts.ts.
+# cancel-in-progress: false → o job que chegar por segundo fica na fila
+# e só executa depois que o primeiro terminar (ao invés de ser cancelado).
+concurrency:
+  group: publicar-post
+  cancel-in-progress: false
+
 on:
   schedule:
 
@@ -124,6 +132,9 @@ jobs:
             echo "⚠️ Nenhuma alteração detectada (possível duplicata evitada)."
           else
             git commit -m "feat(posts): novo artigo automático"
+            # Rebase garante que o post mais recente do repositório seja incorporado
+            # antes do push — evita conflito quando dois jobs são enfileirados
+            git pull --rebase origin main
             git push
             echo "🚀 Post publicado — deploy Cloudflare iniciado!"
           fi
