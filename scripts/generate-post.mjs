@@ -298,6 +298,18 @@ const TEMAS_BANCO = [
   { tema: 'clareza mental', angulo: 'como o excesso de informação prejudica a capacidade de pensar com clareza', sensacao: 'que simplificar o ambiente mental melhora as decisões', keyword: 'como ter mais clareza mental' },
 ];
 
+// ─── Sanitiza parágrafos gerados pela IA ─────────────────────────────────────
+// Evita que caracteres especiais quebrem a sintaxe do TypeScript
+
+function sanitizeParagraph(p) {
+  return p
+    .replace(/\u2014|\u2013/g, ',')   // travessão em vírgula (regra do prompt)
+    .replace(/\u2018|\u2019/g, "'")   // aspas tipográficas simples → padrão
+    .replace(/\u201c|\u201d/g, '"')   // aspas tipográficas duplas → padrão
+    .replace(/\\/g, '\\\\')           // backslashes soltos → escapados
+    .trim();
+}
+
 // ─── Lê posts.ts e conta artigos existentes ──────────────────────────────────
 
 const postsPath = 'src/data/posts.ts';
@@ -506,8 +518,9 @@ if (existingSlugs.has(slug)) {
 
 // ─── Monta bloco do novo post ─────────────────────────────────────────────────
 
+// FIX: sanitiza parágrafos antes de serializar para evitar corrupção do posts.ts
 const escapedParagraphs = paragraphs
-  .map(p => `      ${JSON.stringify(p)}`)
+  .map(p => `      ${JSON.stringify(sanitizeParagraph(p))}`)
   .join(',\n');
 
 const imageCreditField = imageCredit
@@ -540,7 +553,29 @@ const insertPoint = insertIdx + insertMarker.length;
 const before = postsRaw.slice(0, insertPoint);
 const after = postsRaw.slice(insertPoint).replace(/^\s*/, '\n  ');
 
-writeFileSync(postsPath, before + '\n' + newPostBlock + ',\n' + after, 'utf-8');
+// FIX: valida balanceamento de colchetes/chaves antes de salvar
+const newContent = before + '\n' + newPostBlock + ',\n' + after;
+
+const arrayStart = newContent.indexOf('export const posts: Post[] = [');
+const arraySection = newContent.slice(arrayStart);
+let depth = 0;
+let inString = false;
+let escape = false;
+for (const ch of arraySection) {
+  if (escape) { escape = false; continue; }
+  if (ch === '\\' && inString) { escape = true; continue; }
+  if (ch === '"' && !escape) { inString = !inString; continue; }
+  if (!inString) {
+    if (ch === '[' || ch === '{') depth++;
+    if (ch === ']' || ch === '}') depth--;
+  }
+}
+if (depth !== 0) {
+  console.error(`❌ posts.ts ficaria com sintaxe inválida (depth=${depth}). Abortando para não corromper o arquivo.`);
+  process.exit(1);
+}
+
+writeFileSync(postsPath, newContent, 'utf-8');
 
 console.log('💾 posts.ts atualizado!');
 
