@@ -310,6 +310,8 @@ function sanitizeParagraph(p) {
     .replace(/\\/g, '\\\\')            // backslashes soltos → escapados
     .replace(/`/g, "'")                // backticks → aspas simples (CRÍTICO: evita template literal quebrado)
     .replace(/\$\{/g, '(')            // ${...} → ( — evita interpolação quebrada no TS
+    .replace(/\[/g, '(')              // FIX: colchetes dentro de parágrafo podem romper parsing do array TS
+    .replace(/\]/g, ')')              // FIX: fecha colchetes também convertidos
     .trim();
 }
 
@@ -523,7 +525,7 @@ if (existingSlugs.has(slug)) {
 
 // CRÍTICO: sanitiza parágrafos antes de serializar para evitar corrupção do posts.ts
 // JSON.stringify já escapa aspas duplas e newlines — sanitizeParagraph neutraliza
-// os demais caracteres perigosos (backticks, ${, travessões, etc.)
+// os demais caracteres perigosos (backticks, ${, travessões, colchetes, etc.)
 const escapedParagraphs = paragraphs
   .map(p => `      ${JSON.stringify(sanitizeParagraph(p))}`)
   .join(',\n');
@@ -532,23 +534,11 @@ const imageCreditField = imageCredit
   ? `,\n    imageCredit: { author: ${JSON.stringify(imageCredit.author)}, authorLink: ${JSON.stringify(imageCredit.authorLink)}, unsplashLink: ${JSON.stringify(imageCredit.unsplashLink)} }`
   : '';
 
-const newPostBlock = `  {
-    slug: "${slug}",
-    title: ${JSON.stringify(titleLine)},
-    description: ${JSON.stringify(resumoLine)},
-    date: "${postDate}",
-    readingTime: "${readingTime}",
-    category: ${JSON.stringify(category)},
-    tags: ${JSON.stringify(tags)},
-    wordCount: ${wordCount},
-    offerEbook: ${ofereceEbook},
-    image: ${JSON.stringify(imageUrl)}${imageCreditField},
-    content: [
-${escapedParagraphs}
-    ],
-  }`;
+const newPostBlock = `  {\n    slug: "${slug}",\n    title: ${JSON.stringify(titleLine)},\n    description: ${JSON.stringify(resumoLine)},\n    date: "${postDate}",\n    readingTime: "${readingTime}",\n    category: ${JSON.stringify(category)},\n    tags: ${JSON.stringify(tags)},\n    wordCount: ${wordCount},\n    offerEbook: ${ofereceEbook},\n    image: ${JSON.stringify(imageUrl)}${imageCreditField},\n    content: [\n${escapedParagraphs}\n    ],\n  }`;
 
 // ─── Insere no topo do array posts ───────────────────────────────────────────
+// FIX 1: replace mais específico — remove apenas espaços/newlines iniciais do slice,
+// preservando a estrutura do restante do array sem consumir tokens importantes.
 
 const insertMarker = 'export const posts: Post[] = [';
 const insertIdx = postsRaw.indexOf(insertMarker);
@@ -556,9 +546,15 @@ if (insertIdx === -1) throw new Error('Não encontrei "export const posts: Post[
 
 const insertPoint = insertIdx + insertMarker.length;
 const before = postsRaw.slice(0, insertPoint);
-const after = postsRaw.slice(insertPoint).replace(/^\s*/, '\n  ');
+// FIX 1: /^[\s\n]*/ em vez de /^\s*/ — consome todos os whitespace/newlines iniciais
+// e reinsere separador correto, evitando colisão progressiva entre posts
+const after = postsRaw.slice(insertPoint).replace(/^[\s\n]*/, '\n\n  ');
 
-// FIX: valida balanceamento de colchetes/chaves antes de salvar
+// FIX 2 (validação de depth): percorre o conteúdo do array verificando
+// balanceamento de colchetes e chaves, ignorando aspas simples para evitar
+// falsos positivos em contrações (ex: "don't", "você's").
+// Aspas simples NÃO delimitam strings em TypeScript/JSON, então não precisam
+// ser rastreadas — JSON.stringify usa apenas aspas duplas.
 const newContent = before + '\n' + newPostBlock + ',\n' + after;
 
 const arrayStart = newContent.indexOf('export const posts: Post[] = [');
@@ -570,6 +566,7 @@ for (const ch of arraySection) {
   if (escape) { escape = false; continue; }
   if (ch === '\\' && inString) { escape = true; continue; }
   if (ch === '"' && !escape) { inString = !inString; continue; }
+  // aspas simples ignoradas intencionalmente — não delimitam strings em JSON/TS
   if (!inString) {
     if (ch === '[' || ch === '{') depth++;
     if (ch === ']' || ch === '}') depth--;

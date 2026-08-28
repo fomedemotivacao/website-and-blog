@@ -109,6 +109,15 @@ jobs:
         with:
           node-version: '20'
 
+      # FIX 3: git pull --rebase ANTES do script para garantir que o job
+      # leia sempre o posts.ts mais atualizado do repositório, eliminando
+      # a condição de corrida quando dois jobs são enfileirados.
+      - name: Configurar Git e atualizar branch
+        run: |
+          git config user.name "Fome de Motivação Bot"
+          git config user.email "bot@fomedemotivacao.com.br"
+          git pull --rebase origin main
+
       - name: Gerar post via OpenRouter + Unsplash
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -120,11 +129,6 @@ jobs:
           POST_PALAVRA_CHAVE: ${{ github.event.inputs.palavra_chave }}
         run: node scripts/generate-post.mjs
 
-      - name: Configurar Git
-        run: |
-          git config user.name "Fome de Motivação Bot"
-          git config user.email "bot@fomedemotivacao.com.br"
-
       - name: Commit e push
         run: |
           git add src/data/posts.ts public/sitemap.xml
@@ -132,9 +136,6 @@ jobs:
             echo "⚠️ Nenhuma alteração detectada (possível duplicata evitada)."
           else
             git commit -m "feat(posts): novo artigo automático"
-            # Rebase garante que o post mais recente do repositório seja incorporado
-            # antes do push — evita conflito quando dois jobs são enfileirados
-            git pull --rebase origin main
             git push
             echo "🚀 Post publicado — deploy Cloudflare iniciado!"
           fi
