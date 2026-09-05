@@ -1,25 +1,10 @@
-# Fome de Motivação — robots.txt
-# https://fomedemotivacao.com.br
-
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-Disallow: /api/
 
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 1
+# Sitemap
+Sitemap: https://fomedemotivacao.pages.dev/sitemap.xml
 
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-Sitemap: https://fomedemotivacao.com.br/sitemap.xml
+# RSS Feed
+# Pinterest and other services can subscribe to:
+# https://fomedemotivacao.pages.dev/rss.xml
