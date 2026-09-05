@@ -1,147 +1,58 @@
-name: Publicar Posts Automáticos
-
-# ─────────────────────────────────────────────────────────────────────────────
-# ESTRATÉGIA DE CRESCIMENTO EM 3 FASES
-#
-# FASE 1 — Semanas 1 e 2 (21/08 a 03/09/2026): 3 posts/dia
-#   Horários BRT (UTC-3): 07:00, 13:00, 19:00
-#   Cron UTC:             10:00, 16:00, 22:00
-#
-# FASE 2 — Semanas 3 e 4 (04/09 a 17/09/2026): 5 posts/dia
-#   Horários BRT: 06:00, 09:30, 13:00, 16:30, 20:00
-#   Cron UTC:     09:00, 12:30, 16:00, 19:30, 23:00
-#
-# FASE 3 — A partir de 18/09/2026: 8 posts/dia
-#   Horários BRT: 06:00, 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:30
-#   Cron UTC:     09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:30
-# ─────────────────────────────────────────────────────────────────────────────
-
-# ─── TRAVA DE CONCORRÊNCIA ────────────────────────────────────────────────────
-# Impede que dois jobs rodem ao mesmo tempo e corrompam o posts.ts.
-# cancel-in-progress: false → o job que chegar por segundo fica na fila
-# e só executa depois que o primeiro terminar (ao invés de ser cancelado).
-concurrency:
-  group: publicar-post
-  cancel-in-progress: false
+name: Auto Post - Generate Articles and RSS
 
 on:
-  schedule:
-
-    # ── FASE 1: 3x/dia | 21/08 – 03/09/2026 ────────────────────────────────
-    - cron: '0 10 21,22,23,24,25,26,27,28,29,30,31 8 *'
-    - cron: '0 10 1,2,3 9 *'
-    - cron: '0 16 21,22,23,24,25,26,27,28,29,30,31 8 *'
-    - cron: '0 16 1,2,3 9 *'
-    - cron: '0 22 21,22,23,24,25,26,27,28,29,30,31 8 *'
-    - cron: '0 22 1,2,3 9 *'
-
-    # ── FASE 2: 5x/dia | 04/09 – 17/09/2026 ────────────────────────────────
-    - cron: '0 9 4,5,6,7,8,9,10,11,12,13,14,15,16,17 9 *'
-    - cron: '30 12 4,5,6,7,8,9,10,11,12,13,14,15,16,17 9 *'
-    - cron: '0 16 4,5,6,7,8,9,10,11,12,13,14,15,16,17 9 *'
-    - cron: '30 19 4,5,6,7,8,9,10,11,12,13,14,15,16,17 9 *'
-    - cron: '0 23 4,5,6,7,8,9,10,11,12,13,14,15,16,17 9 *'
-
-    # ── FASE 3: 8x/dia | a partir de 18/09/2026 ─────────────────────────
-    - cron: '0 9 18-31 9 *'
-    - cron: '0 9 * 10-12 *'
-    - cron: '0 9 * 1-7 *'
-    - cron: '0 11 18-31 9 *'
-    - cron: '0 11 * 10-12 *'
-    - cron: '0 11 * 1-7 *'
-    - cron: '0 13 18-31 9 *'
-    - cron: '0 13 * 10-12 *'
-    - cron: '0 13 * 1-7 *'
-    - cron: '0 15 18-31 9 *'
-    - cron: '0 15 * 10-12 *'
-    - cron: '0 15 * 1-7 *'
-    - cron: '0 17 18-31 9 *'
-    - cron: '0 17 * 10-12 *'
-    - cron: '0 17 * 1-7 *'
-    - cron: '0 19 18-31 9 *'
-    - cron: '0 19 * 10-12 *'
-    - cron: '0 19 * 1-7 *'
-    - cron: '0 21 18-31 9 *'
-    - cron: '0 21 * 10-12 *'
-    - cron: '0 21 * 1-7 *'
-    - cron: '30 23 18-31 9 *'
-    - cron: '30 23 * 10-12 *'
-    - cron: '30 23 * 1-7 *'
-
   workflow_dispatch:
     inputs:
-      tema:
-        description: 'Tema do artigo (vazio = rotação automática)'
+      topic:
+        description: 'Topic for the article'
+        required: true
+        type: string
+      count:
+        description: 'Number of articles to generate'
         required: false
-        default: ''
-      angulo:
-        description: 'Ângulo editorial (opcional)'
+        type: number
+        default: 1
+      lang:
+        description: 'Language (en or pt)'
         required: false
-        default: ''
-      sensacao:
-        description: 'Reflexão para o leitor (opcional)'
-        required: false
-        default: ''
-      palavra_chave:
-        description: 'Palavra-chave SEO (opcional)'
-        required: false
-        default: ''
-      modelo:
-        description: 'Modelo OpenRouter (ex: google/gemma-4-31b-it:free, meta-llama/llama-3.3-70b-instruct:free)'
-        required: false
-        default: 'google/gemma-4-31b-it:free'
+        type: string
+        default: 'en'
 
 jobs:
-  generate-and-publish:
+  generate-posts:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ github.token }}
-          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # FIX 3: git pull --rebase ANTES do script para garantir que o job
-      # leia sempre o posts.ts mais atualizado do repositório, eliminando
-      # a condição de corrida quando dois jobs são enfileirados.
-      - name: Configurar Git e atualizar branch
-        run: |
-          git config user.name "Fome de Motivação Bot"
-          git config user.email "bot@fomedemotivacao.com.br"
-          git pull --rebase origin main
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Gerar post via OpenRouter + Unsplash
+      - name: Generate posts
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
-          OPENROUTER_MODEL: ${{ github.event.inputs.modelo || 'google/gemma-4-31b-it:free' }}
-          POST_TEMA: ${{ github.event.inputs.tema }}
-          POST_ANGULO: ${{ github.event.inputs.angulo }}
-          POST_SENSACAO: ${{ github.event.inputs.sensacao }}
-          POST_PALAVRA_CHAVE: ${{ github.event.inputs.palavra_chave }}
+          TOPIC: ${{ github.event.inputs.topic }}
+          COUNT: ${{ github.event.inputs.count }}
+          LANG: ${{ github.event.inputs.lang }}
         run: node scripts/generate-post.mjs
 
-      - name: Commit e push
-        run: |
-          git add src/data/posts.ts public/sitemap.xml
-          if git diff --staged --quiet; then
-            echo "⚠️ Nenhuma alteração detectada (possível duplicata evitada)."
-          else
-            git commit -m "feat(posts): novo artigo automático"
-            git push
-            echo "🚀 Post publicado — deploy Cloudflare iniciado!"
-          fi
+      - name: Generate RSS feed
+        run: node scripts/generate-rss.mjs
 
-      - name: Resumo
+      - name: Commit and push changes
         run: |
-          echo "=== RESUMO ==="
-          echo "Data/hora: $(TZ='America/Sao_Paulo' date '+%d/%m/%Y %H:%M BRT')"
-          echo "Último commit: $(git log -1 --format='%s')"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add src/data/posts.ts public/rss.xml
+          git diff --staged --quiet || git commit -m "Auto: new posts and RSS feed for topic: ${{ github.event.inputs.topic }}"
+          git push
