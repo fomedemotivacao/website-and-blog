@@ -6,9 +6,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 
 // Config
-const SITE_URL = 'https://fomedemotivacao.pages.dev';
-const RSS_TITLE = 'Fome de Motivaçº£o - Blog';
-const RSS_DESCRIPTION = 'Artigos sobre motivaçº£o, criptomoedas, tecnologia e desenvolvimento pessoal';
+const SITE_URL = 'https://fomedemotivacao.com.br';
+const RSS_TITLE = 'Fome de Motivacao - Blog';
+const RSS_DESCRIPTION = 'Artigos sobre motivacao, criptomoedas, tecnologia e desenvolvimento pessoal';
 const RSS_LANGUAGE = 'pt-br';
 
 // Read posts.ts and extract the posts array
