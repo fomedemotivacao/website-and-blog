@@ -1,9 +1,9 @@
 import { posts } from '../src/data/posts';
 
 export const onRequestGet = () => {
-  const SITE_URL = 'https://fomedemotivacao.pages.dev';
-  const RSS_TITLE = 'Fome de Motivaçº£o - Blog';
-  const RSS_DESCRIPTION = 'Artigos sobre motivaçº£o, criptomoedas, tecnologia e desenvolvimento pessoal';
+  const SITE_URL = 'https://fomedemotivacao.com.br';
+  const RSS_TITLE = 'Fome de Motivacao - Blog';
+  const RSS_DESCRIPTION = 'Artigos sobre motivacao, criptomoedas, tecnologia e desenvolvimento pessoal';
   const RSS_LANGUAGE = 'pt-br';
 
   // Sort posts by date (newest first)
