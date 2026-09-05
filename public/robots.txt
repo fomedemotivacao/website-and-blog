@@ -3,8 +3,8 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://fomedemotivacao.pages.dev/sitemap.xml
+Sitemap: https://fomedemotivacao.com.br/sitemap.xml
 
 # RSS Feed
 # Pinterest and other services can subscribe to:
-# https://fomedemotivacao.pages.dev/rss.xml
+# https://fomedemotivacao.com.br/rss.xml

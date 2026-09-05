@@ -4,14 +4,14 @@
 
 ### Feed Dinamico (recomendado)
 ```
-https://fomedemotivacao.pages.dev/rss.xml
+https://fomedemotivacao.com.br/rss.xml
 ```
 
 Este feed e gerado automaticamente pela Cloudflare Function e sempre mostra os posts mais recentes.
 
 ### Feed Estatico (alternativa)
 ```
-https://fomedemotivacao.pages.dev/rss.xml
+https://fomedemotivacao.com.br/rss.xml
 ```
 
 O feed estatico e gerado pelo script `scripts/generate-rss.mjs` e atualizado no build.
@@ -21,7 +21,7 @@ O feed estatico e gerado pelo script `scripts/generate-rss.mjs` e atualizado no 
 1. Acesse o [Pinterest Business](https://business.pinterest.com/)
 2. Va em **Configuracoes** > **Claim** (Reivindicar)
 3. Selecione **Website** ou **RSS Feed**
-4. Cole a URL: `https://fomedemotivacao.pages.dev/rss.xml`
+4. Cole a URL: `https://fomedemotivacao.com.br/rss.xml`
 5. Siga as instrucoes de verificacao
 
 ## Como usar em outras plataformas
@@ -30,10 +30,10 @@ O feed estatico e gerado pelo script `scripts/generate-rss.mjs` e atualizado no 
 - O RSS e automaticamente lido pelo Google quando o sitemap esta registrado no Search Console
 
 ### Flipboard
-- Crie uma revista e adicione o RSS: `https://fomedemotivacao.pages.dev/rss.xml`
+- Crie uma revista e adicione o RSS: `https://fomedemotivacao.com.br/rss.xml`
 
 ### Feedly
-- Adicione o feed: `https://fomedemotivacao.pages.dev/rss.xml`
+- Adicione o feed: `https://fomedemotivacao.com.br/rss.xml`
 
 ### IFTTT / Zapier
 - Use o RSS como trigger para automatizar posts em redes sociais
@@ -54,7 +54,7 @@ node scripts/generate-rss.mjs
 
 ### Testar o feed
 ```bash
-curl https://fomedemotivacao.pages.dev/rss.xml
+curl https://fomedemotivacao.com.br/rss.xml
 ```
 
 ## Estrutura do RSS
