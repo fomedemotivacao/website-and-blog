@@ -1,12 +1,17 @@
 name: Auto Post - Generate Articles and RSS
 
 on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '30 15 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch:
     inputs:
       topic:
-        description: 'Topic for the article'
-        required: true
+        description: 'Topic for the article (deixe vazio para rotação automática)'
+        required: false
         type: string
+        default: ''
       count:
         description: 'Number of articles to generate'
         required: false
@@ -16,7 +21,7 @@ on:
         description: 'Language (en or pt)'
         required: false
         type: string
-        default: 'en'
+        default: 'pt'
 
 jobs:
   generate-posts:
@@ -41,7 +46,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
-          TOPIC: ${{ github.event.inputs.topic }}
+          TEMA_INPUT: ${{ github.event.inputs.topic }}
           COUNT: ${{ github.event.inputs.count }}
           LANG: ${{ github.event.inputs.lang }}
         run: node scripts/generate-post.mjs
@@ -54,5 +59,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add src/data/posts.ts public/rss.xml
-          git diff --staged --quiet || git commit -m "Auto: new posts and RSS feed for topic: ${{ github.event.inputs.topic }}"
+          git diff --staged --quiet || git commit -m "Auto: new posts and RSS feed for topic: ${{ github.event.inputs.topic || 'rotação automática' }}"
           git push
