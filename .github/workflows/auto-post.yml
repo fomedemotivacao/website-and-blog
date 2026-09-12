@@ -8,20 +8,22 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: 'Topic for the article (deixe vazio para rotação automática)'
+        description: 'Tema do artigo (vazio usa rotação automática)'
         required: false
         type: string
         default: ''
       count:
-        description: 'Number of articles to generate'
+        description: 'Número de artigos'
         required: false
         type: number
         default: 1
       lang:
-        description: 'Language (en or pt)'
+        description: 'Idioma'
         required: false
-        type: string
-        default: 'pt'
+        type: choice
+        options:
+          - pt
+        default: pt
 
 jobs:
   generate-posts:
@@ -46,9 +48,9 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
-          TEMA_INPUT: ${{ github.event.inputs.topic }}
-          COUNT: ${{ github.event.inputs.count }}
-          LANG: ${{ github.event.inputs.lang }}
+          TEMA_INPUT: ${{ inputs.topic || '' }}
+          COUNT: ${{ inputs.count || 1 }}
+          LANG: pt
         run: node scripts/generate-post.mjs
 
       - name: Generate RSS feed
@@ -58,6 +60,6 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add src/data/posts.ts public/rss.xml
-          git diff --staged --quiet || git commit -m "Auto: new posts and RSS feed for topic: ${{ github.event.inputs.topic || 'rotação automática' }}"
+          git add src/data/posts.ts public/rss.xml sitemap.xml public/sitemap.xml
+          git diff --staged --quiet || git commit -m "Auto: novo artigo em português e RSS atualizado"
           git push
