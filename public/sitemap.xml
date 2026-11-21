@@ -1131,4 +1131,10 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://fomedemotivacao.com.br/blog/a-arquitetura-invisivel-de-quem-voce-esta-se-tornando</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
